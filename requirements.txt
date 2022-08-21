@@ -3,3 +3,9 @@
 # Add the requirements you need to this file.
 # or run `make init` to create this file automatically based on the template.
 # You can also run `make switch-to-poetry` to use the poetry package manager.
+
+
+numpy==1.22.2
+pandas==1.3.4
+matplotlib
+yfinance
