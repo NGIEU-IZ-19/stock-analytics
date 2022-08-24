@@ -18,7 +18,7 @@ from datetime import datetime as dt
 
 import pandas as pd
 import yfinance as yf
-import numpy
+import numpy as np
 
 
 
@@ -93,7 +93,7 @@ class stock_analytics:
             -   Volatility (annualized standard deviation) numerical value, in percent
             -   Daily log return of the Close price
         """
-        self.df_history['Log returns'] = numpy.log(self.df_history['Close']/self.df_history['Close'].shift())
+        self.df_history['Log returns'] = np.log(self.df_history['Close']/self.df_history['Close'].shift())
         volatility_year = self.df_history['Log returns'].std()*252**.5
         volatility_percent = str(round(volatility_year, 4) * 100)
 
@@ -101,11 +101,11 @@ class stock_analytics:
 
     def volume(self):
         """
-        # Volatility is a measurement of the variation of prices over time.
-        #
-        # Method returns:
-        #     -   Volatility (annualized standard deviation) numerical value, in percent
-        #     -   Daily log return of the Close price
+        Volatility is a measurement of the variation of prices over time.
+
+        Method returns:
+            -   Volatility (annualized standard deviation) numerical value, in percent
+            -   Daily log return of the Close price
         """
         return self.df_history['Volume']
 
@@ -121,7 +121,7 @@ class stock_analytics:
         df = yf.Ticker(self.instrument)
         self.df_earnings = df.earnings
 
-        return self.df_self.df_earnings
+        return self.df_earnings
 
     # def obv(self):
     #     """
@@ -146,11 +146,39 @@ class stock_analytics:
     #
     #     print(self.df_earnings)
 
+    def get_momentum_strength(self):
+        """
+        Momentum Strength
+        Momentum is the velocity of price changes in a stock. It is used by investors to define if a stock can exhibit bullish trend, rising price, or bearish trend where the price is steadily falling.
+        """
+
+        df_cl = np.asarray(self.df_history['Close'])
+        momentum = np.subtract(df_cl[10:], df_cl[:-10])
+        return momentum
+
+    def get_aroon(self):
+        """
+        The Arron indicator is composed of two lines. 
+        Considering a time range, an up line measures the number of periods since the highest price in the range, and a down line which measures the number of periods since the lowest price.
+        Aroon indicates a bullish behavior when the Aroon up is above the Aroon down. 
+        The opposite case indicates a bearish price behavior, and when the two lines cross each other can signal a trend changes.
+        """
+
+        period=25
+        df_cl = np.asarray(self.df_history['Close'])
+        aroon_up=[(100/period)*
+                 (period-np.argmax(df_cl[t-period:t])) 
+                 for t in range(period, len(df_cl))]
+        aroon_down=[(100/period)*
+                   (period-np.argmin(df_cl[t-period:t])) 
+                   for t in range(period, len(df_cl))]
+        return aroon_up, aroon_down
 
 if __name__ == '__main__':
     #     #Example of plotting the Apple stock
     admin = stock_analytics("AAPL", fullPeriod=True, period='1y', interval='1d')
     admin_print = pd.DataFrame(admin.df_history)
-    print(admin_print.columns)
-    print(admin.get_earnings())
-
+    # print(admin.get_earnings())
+    # print(admin.volatility())
+    # print(admin.get_momentum_strength())
+    # print(admin.get_aroon())
