@@ -181,4 +181,4 @@ if __name__ == '__main__':
     # print(admin.get_earnings())
     # print(admin.volatility())
     # print(admin.get_momentum_strength())
-    # print(admin.get_aroon())
+    print(admin.get_aroon())
